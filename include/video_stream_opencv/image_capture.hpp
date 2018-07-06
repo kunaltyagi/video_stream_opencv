@@ -192,7 +192,7 @@ struct ImageCapture
         return *this;
     }
 
-    // wrap clear, empty, pop, push for frames_queue_
+    // wrap clear, empty, pop, push, size for frames_queue_
     void clear() {
         std::lock_guard q_lock(q_mutex_);
         frames_queue_ = {};

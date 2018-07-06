@@ -14,8 +14,6 @@
 #include <video_stream_opencv/video_streamer.hpp>
 
 namespace video_stream_opencv {
-class VideoStreamer;
-
 template <class T, typename = std::enable_if_t<std::is_arithmetic<T>::value, std::true_type>>
 std::string to_string(T val) {
     return std::to_string(val);
@@ -104,8 +102,8 @@ struct MultiVideoStreamer
 
     ;
   private:
-    bool update_cb_(std_srvs::Empty::Request& req,
-                    std_srvs::Empty::Response &res) {
+    bool update_cb_(std_srvs::Empty::Request&,
+                    std_srvs::Empty::Response&) {
         return update_parameters_();
     }
 

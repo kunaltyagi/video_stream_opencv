@@ -20,7 +20,7 @@ catkin_package(
 )
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -O2 -g")
 
 include_directories(SYSTEM
   ${catkin_INCLUDE_DIRS}

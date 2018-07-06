@@ -51,8 +51,8 @@ struct VideoStreamer {
     }
 
   private:
-    bool update_cb_(std_srvs::Empty::Request& req,
-                    std_srvs::Empty::Response &res) {
+    bool update_cb_(std_srvs::Empty::Request&,
+                    std_srvs::Empty::Response&) {
         return update_parameters_();
     }
 
