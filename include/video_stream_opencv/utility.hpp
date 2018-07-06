@@ -138,7 +138,7 @@ void consume_frames(const ros::NodeHandle &nh,
                     const bool flip_image = false,
                     const int flip_value = 0) {
     image_transport::ImageTransport it(nh);
-    image_transport::CameraPublisher pub = it.advertiseCamera("camera", 1);
+    image_transport::CameraPublisher pub = it.advertiseCamera(topic, 1);
 
     sensor_msgs::ImagePtr msg;
     sensor_msgs::CameraInfo cam_info_msg;
