@@ -42,7 +42,7 @@
 
 #include <opencv2/videoio.hpp>
 
-#include <video_stream_opencv/video_streamer.hpp>
+#include <video_stream_opencv/multi_video_streamer.hpp>
 
 using namespace video_stream_opencv;
 
@@ -80,6 +80,9 @@ using namespace video_stream_opencv;
 int main(int argc, char** argv)
 {
     ros::init(argc, argv, "video_stream");
-    VideoStreamer node;
-    return node.run();
+    for(auto&x: make_numerical_suffix_array<3>(std::string("fefe"), 4))
+    {
+        std::cout << x << "\n";
+    }
+    return 0;
 }

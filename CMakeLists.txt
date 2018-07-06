@@ -38,6 +38,9 @@ set(INCLUDE_LIBS
 add_executable(video_stream_node src/node.cpp)
 target_link_libraries(video_stream_node ${INCLUDE_LIBS})
 
+add_executable(stereo_video_stream_node src/stereo_node.cpp)
+target_link_libraries(stereo_video_stream_node ${INCLUDE_LIBS})
+
 install(TARGETS video_stream_node
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 

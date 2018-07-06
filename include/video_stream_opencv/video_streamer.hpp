@@ -24,14 +24,33 @@ namespace video_stream_opencv {
 struct VideoStreamer {
     VideoStreamer(): VideoStreamer(boost::make_shared<ros::NodeHandle>("~"))
     {}
-    VideoStreamer(ros::NodeHandlePtr nh_ptr, std::string video_stream_provider = ""):
-        nh_ptr_(nh_ptr) {
+    VideoStreamer(ros::NodeHandlePtr nh_ptr,
+                  std::string video_stream_provider = "",
+                  bool multi_mode = false):
+        nh_ptr_(nh_ptr),
+        multi_mode_(multi_mode) {
         update_srv_ = nh_ptr_->advertiseService("update_param",
                                                 &VideoStreamer::update_cb_,
                                                 this);
         update_parameters_(video_stream_provider);
     }
 
+    int run() {
+        if(!img_cap_->isOpened()) {
+            ROS_ERROR_STREAM("Could not open the stream.");
+            return -1;
+        }
+        ROS_INFO_STREAM("Opened the stream, starting to publish.");
+        std::thread cap_thread{[&]() { return capture_frames(img_cap_,
+                static_cast<unsigned int>(max_error_)); }};
+
+        consume_frames(*nh_ptr_, img_cap_, fps_, camera_name_, frame_id_, camera_info_url_,
+                       flip_image_, flip_value_);
+        cap_thread.join();
+        return 0;
+    }
+
+  private:
     bool update_cb_(std_srvs::Empty::Request& req,
                     std_srvs::Empty::Response &res) {
         return update_parameters_();
@@ -139,22 +158,6 @@ struct VideoStreamer {
         return true;
     }
 
-    int run() {
-        if(!img_cap_->isOpened()) {
-            ROS_ERROR_STREAM("Could not open the stream.");
-            return -1;
-        }
-        ROS_INFO_STREAM("Opened the stream, starting to publish.");
-        std::thread cap_thread{[&]() { return capture_frames(img_cap_,
-                static_cast<unsigned int>(max_error_)); }};
-
-        consume_frames(*nh_ptr_, img_cap_, fps_, camera_name_, frame_id_, camera_info_url_,
-                       flip_image_, flip_value_);
-        cap_thread.join();
-        return 0;
-    }
-
-  private:
     ros::NodeHandlePtr nh_ptr_;
     std::unique_ptr<ImageCapture> img_cap_;
     ros::ServiceServer update_srv_;
@@ -164,6 +167,7 @@ struct VideoStreamer {
     std::string camera_name_, frame_id_, camera_info_url_;
     bool flip_image_;
     int flip_value_;
+    bool multi_mode_;
 };  // class VideoStreamer
 }  // namespace video_stream_opencv
 
