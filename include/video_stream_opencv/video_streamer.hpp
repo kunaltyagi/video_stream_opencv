@@ -129,12 +129,13 @@ struct VideoStreamer {
             img_cap_->close();
         }
 
+        ROS_INFO("Trying to open the resource");
         auto cap = std::make_unique<ImageCapture>(video_stream_provider,
                                                   camera_fps,
                                                   static_cast<unsigned int>(buffer_queue_size),
                                                   loop);
         if(!cap->isOpened()) {
-            ROS_ERROR_STREAM("Could not open new stream.");
+            ROS_ERROR_STREAM("Could not open the resource. Update failed.");
             return false;
         }
 
@@ -158,6 +159,22 @@ struct VideoStreamer {
         return true;
     }
 
+    int run() {
+        if(!img_cap_->isOpened()) {
+            ROS_ERROR_STREAM("Could not open the resource, can't publish images");
+            return -1;
+        }
+        ROS_INFO_STREAM("Opened the stream, starting to publish.");
+        std::thread cap_thread{[&]() { return capture_frames(img_cap_,
+                static_cast<unsigned int>(max_error_)); }};
+
+        consume_frames(*nh_ptr_, img_cap_, fps_, camera_name_, frame_id_, camera_info_url_,
+                       flip_image_, flip_value_);
+        cap_thread.join();
+        return 0;
+    }
+
+  private:
     ros::NodeHandlePtr nh_ptr_;
     std::unique_ptr<ImageCapture> img_cap_;
     ros::ServiceServer update_srv_;
